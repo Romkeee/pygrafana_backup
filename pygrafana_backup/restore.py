@@ -1,4 +1,5 @@
 import requests
+import sys
 import os
 import json
 import logging
@@ -13,9 +14,14 @@ def restore(folder_path):
         with open(file_path, 'r') as file:
             db_json = json.load(file)
             db_json['dashboard']['id'] = None
-            response = requests.post(f"{SERVER}/api/dashboards/db", json=db_json, headers=HEADERS)
-            response_code = response.status_code
-            if response_code == 200:
-                logger.info(f"Dashboard {file_path.path} restored")
-            else:
-                logger.error(f"Can't restore {file_path.path}. Exit code: {response_code}. Error: {response.text}")
+            db_title = db_json['dashboard']['title']
+
+            try:
+                response = requests.post(f"{SERVER}/api/dashboards/db", json=db_json, headers=HEADERS)
+                response.raise_for_status()
+                logger.info(f"Dashboard {db_title} restored from {file_path.path}")
+            except requests.exceptions.HTTPError as e:
+                logger.error(f"Grafana {e.response.status_code} error during {db_title} restore:\n{e.response.text}")
+                sys.exit(1)
+            except requests.exceptions.RequestException as e:
+                logger.error(f"Error connecting to Grafana:\n{e}")
