@@ -4,7 +4,7 @@ import os
 import json
 import logging
 
-from .config import HEADERS, SERVER
+from .config import HEADERS, SERVER, SSL_CHECK
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +17,7 @@ def restore(folder_path):
             db_title = db_json['dashboard']['title']
 
             try:
-                response = requests.post(f"{SERVER}/api/dashboards/db", json=db_json, headers=HEADERS)
+                response = requests.post(f"{SERVER}/api/dashboards/db", json=db_json, headers=HEADERS, verify=SSL_CHECK)
                 response.raise_for_status()
                 logger.info(f"Dashboard {db_title} restored from {file_path.path}")
             except requests.exceptions.HTTPError as e:

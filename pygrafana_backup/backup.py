@@ -6,19 +6,22 @@ import requests
 from datetime import datetime
 from os import path
 
-from .config import HEADERS, SERVER
+from .config import HEADERS, SERVER, SSL_CHECK
 
 logger = logging.getLogger(__name__)
 
 
 def get_dashboards_uids():
-    response = requests.get(f"{SERVER}/api/search?query=&type=dash-db", headers=HEADERS)
+    response = requests.get(f"{SERVER}/api/search?query=&type=dash-db", headers=HEADERS, verify=SSL_CHECK)
     response.raise_for_status()
+    if not response.json():
+        logger.info('No dashboards found to backup')
+        sys.exit(0)
     return (db['uid'] for db in response.json())
 
 
 def get_dashboard_by_uid(uid):
-    return requests.get(f"{SERVER}/api/dashboards/uid/{uid}", headers=HEADERS)
+    return requests.get(f"{SERVER}/api/dashboards/uid/{uid}", headers=HEADERS, verify=SSL_CHECK)
 
 
 def get_current_date():
@@ -51,3 +54,5 @@ def backup(main_folder_path):
         sys.exit(1)
     except requests.exceptions.RequestException as e:
         logger.error(f"Error connecting to Grafana:\n{e}")
+    except PermissionError as e:
+        logger.error(f"No permissions to create backup folder {main_folder_path}:{e}")

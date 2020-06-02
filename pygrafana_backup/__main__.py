@@ -1,8 +1,16 @@
 import argparse
 import logging
+import urllib3
 
 from .backup import backup
 from .restore import restore
+from .config import SSL_CHECK
+
+
+def off_requests_warnings():
+    logging.getLogger("requests").setLevel(logging.WARNING)
+    if not SSL_CHECK:
+        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 def get_parser():
@@ -20,7 +28,7 @@ def main():
     args = parser.parse_args()
 
     logging.basicConfig(level=args.log.upper(), format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    logging.getLogger("requests").setLevel(logging.WARNING)
+    off_requests_warnings()
 
     if args.backup and args.restore:
         parser.error("Arguments -b and -r can't be used together")
