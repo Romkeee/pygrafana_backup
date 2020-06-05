@@ -1,0 +1,14 @@
+version: '3.8'
+services:
+  pygrafana-backup:
+    image: pygrafana-backup
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      SERVER: ${SERVER}
+      API_KEY: ${API_KEY}
+    volumes:
+      - type: bind
+        source: ./grafana-backup
+        target: /opt/pybackup/backup
