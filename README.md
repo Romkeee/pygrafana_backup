@@ -43,14 +43,14 @@ python -m pygrafana_backup -r -f '/backups/grafana/2020-06-05/'
 
 ## Info
 
-####General
+#### General
 SSL by default is disabled but can be enabled by providing environment variable:
 
 ```shell script
 export SSL_CHECK=True
 ```
 
-####Restore
+#### Restore
 Restore procedure designed to upload dashboards only if Grafana host doesn't have the same dashboards already.
 Otherwise API just creates a new version on top of existing dashboard.  
 
