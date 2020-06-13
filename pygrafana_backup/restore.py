@@ -9,12 +9,22 @@ from .config import HEADERS, SERVER, SSL_CHECK
 logger = logging.getLogger(__name__)
 
 
+def is_db_exist(uid):
+    response = requests.get(f"{SERVER}/api/dashboards/uid/{uid}", headers=HEADERS, verify=SSL_CHECK)
+    return response.status_code == 200
+
+
 def restore(folder_path):
     for file_path in os.scandir(folder_path):
         with open(file_path, 'r') as file:
             db_json = json.load(file)
-            db_json['dashboard']['id'] = None
+            db_uid = db_json['dashboard']['uid']
             db_title = db_json['dashboard']['title']
+            if is_db_exist(db_uid):
+                logger.error(f"Dashboard with the same uid found: {db_uid}. Name: {db_title}. Exiting restore.")
+                sys.exit(1)
+
+            db_json['dashboard']['id'] = None
 
             try:
                 response = requests.post(f"{SERVER}/api/dashboards/db", json=db_json, headers=HEADERS, verify=SSL_CHECK)

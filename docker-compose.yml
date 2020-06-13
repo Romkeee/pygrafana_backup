@@ -1,6 +1,7 @@
 version: '3.8'
 services:
   pygrafana-backup:
+    container_name: pygrafana-backup
     image: pygrafana-backup
     build:
       context: .
@@ -10,5 +11,5 @@ services:
       API_KEY: ${API_KEY}
     volumes:
       - type: bind
-        source: ./grafana-backup
+        source: /backups/grafana-backup
         target: /opt/pybackup/backup

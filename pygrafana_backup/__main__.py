@@ -18,7 +18,7 @@ def get_parser():
     parser = argparse.ArgumentParser(prog='pygrafana-backup', description='Backups/Restores Grafana dashboards via api')
     parser.add_argument('-b', '--backup', action='store_true', help='Backup all dashboards')
     parser.add_argument('-r', '--restore', action='store_true', help='Restore all dashboards')
-    parser.add_argument('-f', '--folder', type=str, help='Main folder path', default='./backup')
+    parser.add_argument('-f', '--folder', type=str, help='Main folder path (default: ./backup)', default='./backup')
     parser.add_argument('-l', '--log', choices=logging_levels, default='info', help='Logging level (default: info)')
     return parser
 

@@ -16,4 +16,5 @@ COPY --chown=1000:1000 pygrafana_backup ./pygrafana_backup/
 
 USER pybackup
 
-ENTRYPOINT ["python", "-m", "pygrafana_backup", "-b"]
+ENTRYPOINT ["python", "-m", "pygrafana_backup"]
+CMD ["-b"]
