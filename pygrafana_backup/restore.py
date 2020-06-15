@@ -20,13 +20,13 @@ def restore(folder_path):
             db_json = json.load(file)
             db_uid = db_json['dashboard']['uid']
             db_title = db_json['dashboard']['title']
-            if is_db_exist(db_uid):
-                logger.error(f"Dashboard with the same uid found: {db_uid}. Name: {db_title}. Exiting restore.")
-                sys.exit(1)
-
-            db_json['dashboard']['id'] = None
 
             try:
+                if is_db_exist(db_uid):
+                    logger.error(f"Dashboard with the same uid found: {db_uid}. Name: {db_title}. Exiting restore.")
+                    sys.exit(1)
+
+                db_json['dashboard']['id'] = None
                 response = requests.post(f"{SERVER}/api/dashboards/db", json=db_json, headers=HEADERS, verify=SSL_CHECK)
                 response.raise_for_status()
                 logger.info(f"Dashboard {db_title} restored from {file_path.path}")
