@@ -1,3 +1,4 @@
+import asyncio
 import argparse
 import logging
 import urllib3
@@ -5,12 +6,6 @@ import urllib3
 from .backup import backup
 from .restore import restore
 from .config import SSL_CHECK
-
-
-def off_requests_warnings():
-    logging.getLogger("requests").setLevel(logging.WARNING)
-    if not SSL_CHECK:
-        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 def get_parser():
@@ -23,6 +18,12 @@ def get_parser():
     return parser
 
 
+def off_requests_warnings():
+    logging.getLogger("requests").setLevel(logging.WARNING)
+    if not SSL_CHECK:
+        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+
 def main():
     parser = get_parser()
     args = parser.parse_args()
@@ -32,10 +33,12 @@ def main():
 
     if args.backup and args.restore:
         parser.error("Arguments -b and -r can't be used together")
-    elif args.backup:
-        backup(args.folder)
-    elif args.restore:
-        restore(args.folder)
+    elif args.backup or args.restore:
+        loop = asyncio.get_event_loop()
+        if args.backup:
+            loop.run_until_complete(backup(args.folder))
+        elif args.restore:
+            loop.run_until_complete(restore(args.folder))
 
 
 main()
